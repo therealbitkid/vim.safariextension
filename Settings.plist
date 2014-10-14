@@ -10,5 +10,15 @@
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>smoothscroll</string>
+		<key>Title</key>
+		<string>Use smooth scrolling</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
 </array>
 </plist>

@@ -3,6 +3,7 @@ var multiplier = 0;
 var t = {};
 var timer;
 var loaded = false;
+var smoothscroll = true;
 
 var handler = function(e) {
   var c = String.fromCharCode(e.keyCode).toLowerCase();
@@ -19,42 +20,61 @@ var handler = function(e) {
 
   if(window.document.activeElement !== window.document.body) {
     switch (e.keyCode) {
-		case 27:
-		  if (document.getElementById('vimOverlay').style.display == "block") {
-			  document.getElementById('vimOverlay').style.display = 'none';
-			  document.getElementById('vimOverlayTextinput').value = '';
-		  } else {
-			  t.lastActiveElement = window.document.activeElement;
-		  }
+    case 27:
+      if (document.getElementById('vimOverlay').style.display == "block") {
+        document.getElementById('vimOverlay').style.display = 'none';
+        document.getElementById('vimOverlayTextinput').value = '';
+      } else {
+        t.lastActiveElement = window.document.activeElement;
+      }
       combokey = '';
       multiplier = 0;
-		  window.document.activeElement.blur();
-		  break;
-		case 8:
-			if (window.document.activeElement.id == "vimOverlayTextinput" && window.document.activeElement.value == '') {
-				window.document.activeElement.blur();
-				document.getElementById('vimOverlay').style.display = "none";
-				e.preventDefault();
-			}
-			break;
-		case 13:
-			if (window.document.activeElement.id == "vimOverlayTextinput") {
-				t.inputCommand(window.document.activeElement.value);
-				window.document.activeElement.value = '';
-				window.document.activeElement.blur();
-				document.getElementById('vimOverlay').style.display = "none";
-			}
-			break;
+      window.document.activeElement.blur();
+      break;
+    case 8:
+      if (window.document.activeElement.id == "vimOverlayTextinput" && window.document.activeElement.value == '') {
+        window.document.activeElement.blur();
+        document.getElementById('vimOverlay').style.display = "none";
+        e.preventDefault();
+      }
+      break;
+    case 13:
+      if (window.document.activeElement.id == "vimOverlayTextinput") {
+        t.inputCommand(window.document.activeElement.value);
+        window.document.activeElement.value = '';
+        window.document.activeElement.blur();
+        document.getElementById('vimOverlay').style.display = "none";
+      }
+      break;
     }
     return;
   } else {
 
     switch (e.keyCode) {
-		case 27:
+    case 27:
       t.resetCombo();
       break;
     }
   }
+
+  t.smoothTo = function(x, y, i) {
+    setTimeout(function () {
+      if (y<0) {
+        if (i>y) {
+          var st = y*-1;
+          window.scrollBy(x, -(st/10));
+          i = i-(st/10);
+          t.smoothTo(x, y, i);
+        }
+      } else {
+        if (i<y) {
+          window.scrollBy(x, y/10);
+          i = i+(y/10);
+          t.smoothTo(x, y, i);
+        }
+      }
+    }, 20)
+  };
 
   t.scroll = function(x, y) {
     window.scrollBy(x, y);
@@ -66,11 +86,11 @@ var handler = function(e) {
   t.halfWindowHeight = function() {
     return window.innerHeight / 2;
   };
-  
+
   t.fullWindowHeight = function() {
     return window.innerHeight;
   };
-  
+
   t.screenHeight = function() {
     return document.body.offsetHeight;
   };
@@ -79,36 +99,36 @@ var handler = function(e) {
     if (keys.none == '1' && (e.altKey || e.metaKey || e.ctrlKey || e.altGraphKey || e.shiftKey)) {
       return false;
     }
-	  if ((keys.alt != '1' && e.altKey) || (keys.alt == '1' && !e.altKey)) {
-		  return false;
-	  }
-	  if ((keys.meta != '1' && e.metaKey) || (keys.meta == '1' && !e.metaKey)) {
-		  return false;
-	  }
-	  if ((keys.ctrl != '1' && e.ctrlKey) || (keys.ctrl == '1' && !e.ctrlKey)) {
-		  return false;
-	  }
-	  if ((keys.altgr != '1' && e.altGraphKey) || (keys.altgr == '1' && !e.altGraphKey)) {
-		  return false;
-	  }
-	  if ((keys.shift != '1' && e.shiftKey) || (keys.shift == '1' && !e.shiftKey)) {
-		  return false;
-	  }
-	  return true;
+    if ((keys.alt != '1' && e.altKey) || (keys.alt == '1' && !e.altKey)) {
+      return false;
+    }
+    if ((keys.meta != '1' && e.metaKey) || (keys.meta == '1' && !e.metaKey)) {
+      return false;
+    }
+    if ((keys.ctrl != '1' && e.ctrlKey) || (keys.ctrl == '1' && !e.ctrlKey)) {
+      return false;
+    }
+    if ((keys.altgr != '1' && e.altGraphKey) || (keys.altgr == '1' && !e.altGraphKey)) {
+      return false;
+    }
+    if ((keys.shift != '1' && e.shiftKey) || (keys.shift == '1' && !e.shiftKey)) {
+      return false;
+    }
+    return true;
   }
 
   switch (e.keyIdentifier) {
-	  case "U+003A":
-		  document.getElementById('vimOverlay').style.display = "block";
-		  document.getElementById('vimOverlayTextinput').focus();
-		  e.preventDefault();
-		break;
-	  case "U+0008":
-		  if (document.getElementById('vimOverlay').style.display == "block" && document.getElementById('vimOverlayTextinput').value == '') {
-			  document.getElementById('vimOverlayTextinput').blur();
-			  document.getElementById('vimOverlay').style.display = "none";
-		  }
-		break;
+    case "U+003A":
+      document.getElementById('vimOverlay').style.display = "block";
+      document.getElementById('vimOverlayTextinput').focus();
+      e.preventDefault();
+    break;
+    case "U+0008":
+      if (document.getElementById('vimOverlay').style.display == "block" && document.getElementById('vimOverlayTextinput').value == '') {
+        document.getElementById('vimOverlayTextinput').blur();
+        document.getElementById('vimOverlay').style.display = "none";
+      }
+    break;
     case "U+0027":
       combokey += "'";
     break;
@@ -118,7 +138,7 @@ var handler = function(e) {
 }
 
 t.keyCommand = function(c, e) {
-  
+
   var reset_combo = true;
   var SCROLL_STEP = 35;
 
@@ -135,12 +155,20 @@ t.keyCommand = function(c, e) {
     break;
     case 'j':
       if (t.functionkeys({'none': '1'})) {
-        t.scroll(0, SCROLL_STEP);
+        if (smoothscroll) {
+          t.smoothTo(0, SCROLL_STEP, 0);
+        } else {
+          t.scroll(0, SCROLL_STEP);
+        }
       }
     break;
     case 'k':
       if (t.functionkeys({'none': '1'})) {
-        t.scroll(0, -SCROLL_STEP);
+        if (smoothscroll) {
+          t.smoothTo(0, -SCROLL_STEP, 0);
+        } else {
+          t.scroll(0, -SCROLL_STEP);
+        }
       }
     break;
     case 'l':
@@ -150,8 +178,12 @@ t.keyCommand = function(c, e) {
     break;
     case 'd':
       if (t.functionkeys({'ctrl': '1'})) {
-        t.scroll(0, t.halfWindowHeight());
-      } else { 
+        if (smoothscroll) {
+          t.smoothTo(0, t.halfWindowHeight(), 0);
+        } else {
+          t.scroll(0, t.halfWindowHeight());
+        }
+      } else {
         reset_combo = false;
       }
     break;
@@ -161,18 +193,30 @@ t.keyCommand = function(c, e) {
       }
     break;
     case 'f':
-      if(t.functionkeys({'ctrl': '1'})) { 
-        t.scroll(0, t.fullWindowHeight());
+      if(t.functionkeys({'ctrl': '1'})) {
+        if (smoothscroll) {
+          t.smoothTo(0, t.fullWindowHeight(), 0);
+        } else {
+          t.scroll(0, t.fullWindowHeight());
+        }
       }
     break;
     case 'u':
       if(t.functionkeys({'ctrl': '1'})) {
-        t.scroll(0, -t.halfWindowHeight());
+        if (smoothscroll) {
+          t.smoothTo(0, -t.halfWindowHeight(), 0);
+        } else {
+          t.scroll(0, -t.halfWindowHeight());
+        }
       }
     break;
     case 'b':
       if(t.functionkeys({'ctrl': '1'})) {
-        t.scroll(0, -t.fullWindowHeight());
+        if (smoothscroll) {
+          t.smoothTo(0, -t.fullWindowHeight(), 0);
+        } else {
+          t.scroll(0, -t.fullWindowHeight());
+        }
       }
     break;
     case 'G':
@@ -211,51 +255,51 @@ t.keyCommand = function(c, e) {
     t.resetCombo();
   }
 
-}  
+}
 
 t.inputCommand = function(command) {
-	if (command == '') return;
+  if (command == '') return;
 
   if (command.charAt(0) == "%") {
     t.percentCommand(command);
     return;
   }
 
-	param = command.split(" ");
+  param = command.split(" ");
 
-	switch (param[0]) {
-		case 'tabe':
-		case 'tabedit':
-		case 'e':
+  switch (param[0]) {
+    case 'tabe':
+    case 'tabedit':
+    case 'e':
     case 'edit':
-			if (param[1] == "" || param[1] == undefined) {
-				if (param[0] == 'e' || param[0] == 'edit') {
-					alert('Usage: command "edit" or "e" for short, opens the url specified as first parameter in the current tab');
-				} else {
-					alert('Usage: command "tabedit" or "tabe" for short, opens a url specified as first parameter in a new tab');
-				}
+      if (param[1] == "" || param[1] == undefined) {
+        if (param[0] == 'e' || param[0] == 'edit') {
+          alert('Usage: command "edit" or "e" for short, opens the url specified as first parameter in the current tab');
+        } else {
+          alert('Usage: command "tabedit" or "tabe" for short, opens a url specified as first parameter in a new tab');
+        }
 
-			} else {
-				var url = param[1]
-				if (url.substr(0,5) != "http:" && url.substr(0,6) != "https:") {
-					url = "http://" + url;
-				}
-				if (param[0] == 'tabe' || param[0] == 'tabedit') {
-					safari.self.tab.dispatchMessage("openTab",url);
-				} else {
-					location.href = url;
-				}
-			}
-		break;
-		
+      } else {
+        var url = param[1]
+        if (url.substr(0,5) != "http:" && url.substr(0,6) != "https:") {
+          url = "http://" + url;
+        }
+        if (param[0] == 'tabe' || param[0] == 'tabedit') {
+          safari.self.tab.dispatchMessage("openTab",url);
+        } else {
+          location.href = url;
+        }
+      }
+    break;
+
     case 'q':
-			safari.self.tab.dispatchMessage("closeTab");
-		break;
+      safari.self.tab.dispatchMessage("closeTab");
+    break;
 
     case 'qa':
       safari.self.tab.dispatchMessage("closeWindow");
     break;
-    
+
     case 'tabn':
       safari.self.tab.dispatchMessage("nextTab",0);
     break;
@@ -272,17 +316,17 @@ t.inputCommand = function(command) {
     case 'tablast':
       safari.self.tab.dispatchMessage("nextTab","last");
     break;
-    
+
     case 'tabnew':
       safari.self.tab.dispatchMessage("newTab","");
     break;
-      
-	}
+
+  }
 }
 
 t.percentCommand = function(command) {
-	param = command.split("/");
-  
+  param = command.split("/");
+
   switch (param[0]) {
     case "%s":
       if (t.lastActiveElement == undefined) break;
@@ -305,8 +349,12 @@ t.disable = function() {
   window.document.removeEventListener("keydown", handler, false);
 }
 
+t.smoothscrolling = function(value) {
+  smoothscroll = value;
+}
+
 function getAnswer(theMessageEvent) {
-	switch (theMessageEvent.name) {
+  switch (theMessageEvent.name) {
     case "resetcombo":
       t.resetCombo();
     break;
@@ -316,15 +364,20 @@ function getAnswer(theMessageEvent) {
         t.disable();
       }
     break;
-    
+
     case "load":
       if (!loaded) {
         loaded = true;
         window.document.addEventListener("keydown", handler);
       }
     break;
-	}
+
+    case "smooth":
+      t.smoothscrolling(theMessageEvent.message);
+    break;
+  }
 }
 safari.self.addEventListener("message", getAnswer, false);
 
 safari.self.tab.dispatchMessage("disabledSites","");
+safari.self.tab.dispatchMessage("smoothscroll","");

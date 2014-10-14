@@ -3,14 +3,15 @@
 <head>
    <title>global page</title>
    <script type="text/javascript">
- 
+
   var disabledSites = safari.extension.settings.disabledsites;
+  var smoothscroll = safari.extension.settings.smoothscroll;
 
 /*  var tabActive = [];
   var updating = false;
 
   setInterval("update()", 100);
-  
+
   function update() {
     if (!updating && tabActive[safari.application.browserWindows.indexOf(safari.application.activeBrowserWindow)] != undefined && tabActive[safari.application.browserWindows.indexOf(safari.application.activeBrowserWindow)][0] != undefined && parseInt(tabActive[safari.application.browserWindows.indexOf(safari.application.activeBrowserWindow)][0]) != parseInt(safari.application.activeBrowserWindow.tabs.indexOf( safari.application.activeBrowserWindow.activeTab ))) {
       updateing = true;
@@ -24,7 +25,7 @@
   String.prototype.trim = function () {
       return this.replace(/^\s*/, "").replace(/\s*$/, "");
   }
-  
+
   function disabledSitesHandler() {
     if (disabledSites != undefined) {
       disabledSitesArray = disabledSites.split(",");
@@ -45,25 +46,42 @@
     }
   }
 
-  function disabledSitesChanged(event) {
-    if (event.key == "disabledsites") {
-      disabledSites=event.newValue;
-      disabledSitesHandler();
+  function smoothscrollHandler() {
+    if (smoothscroll != undefined) {
+      if (smoothscroll) {
+        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("smooth",true);
+      } else {
+        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("smooth",false);
+      }
+    } else {
+        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("smooth",true);
     }
   }
-   
-  safari.extension.settings.addEventListener("change", disabledSitesChanged, false);
 
-	function closeTab() {
-		safari.application.activeBrowserWindow.activeTab.close();
-	}
+  function settingsChanged(event) {
+    if (event.key == "disabledsites") {
+      disabledSites = event.newValue;
+      disabledSitesHandler();
+    }
+
+    if (event.key == "smoothscroll") {
+      smoothscroll = event.newValue;
+      smoothscrollHandler();
+    }
+  }
+
+  safari.extension.settings.addEventListener("change", settingsChanged, false);
+
+  function closeTab() {
+    safari.application.activeBrowserWindow.activeTab.close();
+  }
 
   function closeWindow() {
     safari.application.activeBrowserWindow.close();
   }
 
-	function openTab(event) {
-		var url = event.message;
+  function openTab(event) {
+    var url = event.message;
     var index = safari.application.activeBrowserWindow.tabs.indexOf( safari.application.activeBrowserWindow.activeTab );
     if (url != "") {
       safari.application.activeBrowserWindow.openTab('foreground', ++index).url = url;
@@ -71,7 +89,7 @@
       safari.application.activeBrowserWindow.openTab('foreground', ++index);
     }
     safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("resetcombo", true);
-	}
+  }
 
 /*  function changeTabActive() {
    console.log(safari.application.browserWindows.indexOf( safari.application.activeBrowserWindow )); 
@@ -82,19 +100,19 @@
   }
 */
 
-	function respondToMessage(theMessageEvent) {
-		switch (theMessageEvent.name) {
-			case "closeTab":
-				closeTab();
-			break;
+  function respondToMessage(theMessageEvent) {
+    switch (theMessageEvent.name) {
+      case "closeTab":
+        closeTab();
+      break;
 
       case "closeWindow":
         closeWindow();
       break;
 
-			case "openTab":
+      case "openTab":
       case "newTab":
-				openTab(theMessageEvent);
+        openTab(theMessageEvent);
 //        changeTabActive();
         safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("resetcombo", true);
       break;
@@ -136,16 +154,20 @@
           safari.application.activeBrowserWindow.tabs[tabActive[0]].activate();
           changeTabActive();
         }
-      break; 
+      break;
 
       case "disabledSites":
         disabledSitesHandler();
       break;
-		}
-	}
- 
+
+      case "smoothscroll":
+        smoothscrollHandler();
+      break;
+    }
+  }
+
     safari.application.addEventListener("message",respondToMessage,false);
-	
+
    </script>
 </head>
 <body> </body>
