@@ -135,7 +135,7 @@ var handler = function(e) {
   }
 
   t.keyCommand(combokey, e);
-}
+};
 
 t.keyCommand = function(c, e) {
 
@@ -188,7 +188,7 @@ t.keyCommand = function(c, e) {
       }
     break;
     case 'dd':
-      if (t.functionkeys({'none': '1'}) && t.lastActiveElement != undefined) {
+      if (t.functionkeys({'none': '1'}) && t.lastActiveElement !== undefined) {
         t.lastActiveElement.value = '';
       }
     break;
@@ -225,7 +225,7 @@ t.keyCommand = function(c, e) {
       }
     break;
     case 'i':
-      if (t.lastActiveElement != undefined) {
+      if (t.lastActiveElement !== undefined) {
         t.lastActiveElement.focus();
         e.preventDefault();
       }
@@ -329,7 +329,7 @@ t.percentCommand = function(command) {
 
   switch (param[0]) {
     case "%s":
-      if (t.lastActiveElement == undefined) break;
+      if (t.lastActiveElement === undefined) break;
       if (param.length == 3 || param.length == 4) {
         var mod = "";
         if (param.length == 4) mod = param[3];
@@ -338,16 +338,16 @@ t.percentCommand = function(command) {
       }
     break;
   }
-}
+};
 
 t.resetCombo = function() {
   combokey = '';
   multiplier = 0;
-}
+};
 
 t.disable = function() {
   window.document.removeEventListener("keydown", handler, false);
-}
+};
 
 t.smoothscrolling = function(value) {
   smoothscroll = value;
