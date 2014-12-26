@@ -7,7 +7,7 @@ Currently supported keys:
 * h, j, k, l
 * ^D, ^U, ^F, ^B
 * esc, i, dd
-* gt, gT, <number>gt
+* gt, gT, \<number\>gt
 
 Currently supported commands:
 
